@@ -1,10 +1,16 @@
-package java.sudoku;
+package com.ahars.sudoku;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class SudokuResolverJava8 {
+
+    private static String path = "src/main/resources/";
+    private static String file = "grid.txt";
 
     private static List<Integer> initialGrid;
     private static List<Integer> resultGrid;
@@ -14,25 +20,29 @@ public class SudokuResolverJava8 {
     public static void main(String[] args) {
 
         try {
-            initGivenGrid(args);
+            initGivenGrid(file);
             solveGrid();
-
         } catch (StringIndexOutOfBoundsException sioobe) {
             System.out.println("Error in the given grid : " + sioobe);
         } catch (NumberFormatException nfe) {
             System.out.println("Wrong character in the given grid : " + nfe);
+        } catch (IndexOutOfBoundsException ioobe) {
+            System.out.println("Error in the given grid : " + ioobe);
+        } catch (IOException ioe) {
+            System.out.println("Error in opening the file : " + ioe);
         }
     }
 
-    private static void initGivenGrid(String[] args) {
+    private static void initGivenGrid(String file) throws IOException {
 
         initialGrid = new ArrayList<>();
 
-        IntStream.range(0, args.length).forEach(i -> {
-            initialGrid.add(Integer.parseInt(args[i].substring(0, 1)));
-            initialGrid.add(Integer.parseInt(args[i].substring(1, 2)));
-            initialGrid.add(Integer.parseInt(args[i].substring(2, 3)));
-        });
+        Stream<String> lines = Files.lines(Paths.get(path, file));
+
+        lines.map(line -> Arrays.asList(line.split(" ")))
+                .forEach(x -> x.forEach(t -> Arrays.asList(t.split(""))
+                        .forEach(z -> initialGrid.add(Integer.parseInt(z)))));
+        lines.close();
 
         displayGrid(initialGrid);
     }
