@@ -75,34 +75,33 @@ public class SudokuResolverJava8 {
             displayGrid(resultGrid);
         } else
             System.out.println("NO SOLUTION");
-        displayGrid(resultGrid);
     }
 
     // DON'T WORK
-    private static boolean sve(int i, int j) {
+    private static boolean sve(int col, int lin) {
 
-        if (i == 9) // end of the column => grid solved
+        if (col == 9) // end of the column => grid solved
             return true;
 
-        int index = i * 9 + j;
+        int index = col * 9 + lin;
 
         if (initialGrid.get(index) != 0) { // skip filled cells
             resultGrid.add(index, initialGrid.get(index));
-            return sve(i, j + 1);
+            return sve(col, lin + 1);
         }
 
         for (val = 1; val < 10; ++val) {
             ok = true;
 
             ok = IntStream.range(0, 9) // row
-                    .filter(k -> val == initialGrid.get(k * 9 + j))
+                    .filter(k -> val == initialGrid.get(k * 9 + lin))
                     .anyMatch(x -> false);
 
             ok = IntStream.range(0, 9) // col
-                    .filter(k -> val == initialGrid.get(i * 9 + k))
+                    .filter(k -> val == initialGrid.get(col * 9 + k))
                     .anyMatch(x -> false);
 
-            int box = j - (i * 9);
+            int box = lin - (col * 9);
 
             IntStream.range(0, 3)
                     .forEach(m -> ok = IntStream.range(0, 3) // box
@@ -113,7 +112,7 @@ public class SudokuResolverJava8 {
             if (ok) {
                 resultGrid.remove(index);
                 resultGrid.add(index, val);
-                if (sve(i, j + 1))
+                if (sve(col, lin + 1))
                     return true;
             }
         }
