@@ -17,70 +17,117 @@ public class SudokuResolverJava8 {
     private static boolean ok;
     private static int val;
 
+    /**
+     * Launch the reading of a file, the data ingestion into a Grid and the resolving of this Grid.
+     * @param args param not used.
+     */
     public static void main(String[] args) {
 
         try {
             initGivenGrid(file);
-            solveGrid();
+            displayGrid(initialGrid);
+
+            solveGridAndDisplay();
+
         } catch (StringIndexOutOfBoundsException sioobe) {
-            System.out.println("Error in the given grid : " + sioobe);
+            println("Error in the given grid : " + sioobe);
         } catch (NumberFormatException nfe) {
-            System.out.println("Wrong character in the given grid : " + nfe);
+            println("Wrong character in the given grid : " + nfe);
         } catch (IndexOutOfBoundsException ioobe) {
-            System.out.println("Error in the given grid : " + ioobe);
+            println("Error in the given grid : " + ioobe);
         } catch (IOException ioe) {
-            System.out.println("Error in opening the file : " + ioe);
+            println("Error in opening the file : " + ioe);
         }
     }
 
+    /**
+     * Read of the given file containing the data and initialize the Grid with them.
+     * @param file The file containing the data for the Grid.
+     * @throws IOException if there is a problem during the reading of the file.
+     */
     private static void initGivenGrid(String file) throws IOException {
 
         initialGrid = new ArrayList<>();
-
         Stream<String> lines = Files.lines(Paths.get(path, file));
 
         lines.map(line -> Arrays.asList(line.split(" ")))
                 .forEach(x -> x.forEach(t -> Arrays.asList(t.split(""))
                         .forEach(z -> initialGrid.add(Integer.parseInt(z)))));
         lines.close();
-
-        displayGrid(initialGrid);
     }
 
+    /**
+     * Display a Grid in a user-friendly way.
+     * @param grid the Grid to display
+     */
     private static void displayGrid(List<Integer> grid) {
 
+        // Loop For with Streams
         IntStream.range(0, 9).forEach(i -> {
             if (i % 3 == 0)
-                System.out.println(" -----------------------");
+                println(" -----------------------");
 
+            // Loop For with Streams
             IntStream.range(0, 9).forEach(j -> {
                 if (j % 3 == 0)
-                    System.out.print("| ");
+                    print("| ");
 
-                System.out.print(ifGridColumnEmpty(grid, i * 9 + j) == 0 ? "  " : grid.get(i * 9 + j) + " ");
+                print(ifGridColumnEmpty(grid, i * 9 + j) == 0 ? " " : grid.get(i * 9 + j));
+                print(" ");
             });
-            System.out.println("|");
+            println("|");
         });
-        System.out.println(" -----------------------");
+        println(" -----------------------");
     }
 
+    /**
+     * Print an object to an output
+     * @param o Object to print
+     */
+    private static void print(Object o) {
+        System.out.print(o);
+    }
+
+    /**
+     * Println an object to an output
+     * @param o Object to println
+     */
+    private static void println(Object o) {
+        System.out.println(o);
+    }
+
+    /**
+     * Test on the value of the Grid.
+     * @param grid Grid on which the test is launched on.
+     * @param index Index of the value inside the Grid.
+     * @return Return the value for the index or 0.
+     */
     private static Integer ifGridColumnEmpty(List<Integer> grid, int index) {
         return index >= grid.size() ? 0 : grid.get(index);
     }
 
-    private static void solveGrid() {
+    /**
+     * Resolve the given Grid and display the result.
+     */
+    private static void solveGridAndDisplay() {
 
         resultGrid = new ArrayList<>(initialGrid);
-        if (sve(0, 0)) {
+        if (sve(0, 0))
             displayGrid(resultGrid);
-        } else
-            System.out.println("NO SOLUTION");
+        else
+            println("NO SOLUTION");
     }
 
-    // DON'T WORK
+    /**
+     * Core of the resolving of Grid (recursive function).
+     * @param col Column of the Grid
+     * @param lin Line of the Grid
+     * @return Return TRUE if the resolving is ok or FALSE
+     */
     private static boolean sve(int col, int lin) {
 
-        if (col == 9) // end of the column => grid solved
+        // End of the column => grid solved
+        if (col == 9)
             return true;
 
         int index = col * 9 + lin;
